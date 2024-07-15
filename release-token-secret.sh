@@ -5,27 +5,22 @@ list_iam_users() {
     aws iam list-users --query 'Users[].UserName' --output text
 }
 
-# Function to generate temporary session credentials
-generate_session_credentials() {
+# Function to generate AWS access key and secret key
+generate_access_keys() {
     local user_name="$1"
-    
-    # Generate session credentials with 30 days (2592000 seconds) validity
-    session_credentials=$(aws sts get-session-token \
-                            --duration-seconds 2592000 \
-                            --output json \
-                            --query 'Credentials.{AccessKeyId:AccessKeyId,SecretAccessKey:SecretAccessKey,SessionToken:SessionToken}')
 
-    # Extract credentials
-    access_key_id=$(echo "$session_credentials" | jq -r '.AccessKeyId')
-    secret_access_key=$(echo "$session_credentials" | jq -r '.SecretAccessKey')
-    session_token=$(echo "$session_credentials" | jq -r '.SessionToken')
+    # Generate access key and secret key
+    keys=$(aws iam create-access-key --user-name "$user_name" --output json)
 
-    # Print credentials to a text file
-    echo "Access Key ID: $access_key_id" > credentials.txt
-    echo "Secret Access Key: $secret_access_key" >> credentials.txt
-    echo "Session Token: $session_token" >> credentials.txt
+    # Extract access key and secret key
+    access_key_id=$(echo "$keys" | jq -r '.AccessKey.AccessKeyId')
+    secret_access_key=$(echo "$keys" | jq -r '.AccessKey.SecretAccessKey')
 
-    echo "Generated credentials and saved to 'credentials.txt'"
+    # Print keys to a text file
+    echo "Access Key ID: $access_key_id" > access_keys.txt
+    echo "Secret Access Key: $secret_access_key" >> access_keys.txt
+
+    echo "Generated access and secret keys and saved to 'access_keys.txt'"
 }
 
 # Main function
@@ -50,9 +45,9 @@ main() {
             echo "Users matching '$keyword':"
             echo "$users"
             
-            # Generate session credentials for each user found
+            # Generate access and secret keys for each user found
             for user in $users; do
-                generate_session_credentials "$user"
+                generate_access_keys "$user"
             done
         fi
     done
