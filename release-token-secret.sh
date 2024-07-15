@@ -5,6 +5,46 @@ list_iam_users() {
     aws iam list-users --query 'Users[].UserName' --output text
 }
 
+# Function to list IAM roles
+list_iam_roles() {
+    aws iam list-roles --query 'Roles[].RoleName' --output text
+}
+
+# Function to check if a role session name exists
+role_session_exists() {
+    local role_session="$1"
+    local assume_output="$2"
+    grep -q "$role_session" "$assume_output"
+}
+
+release_token_secret() {
+    # Attempt to find a unique role session name
+    session_number=1
+    while true; do
+        role_session="RoleSession$session_number"
+        this_account=$(aws sts get-caller-identity --query Account --output text)
+
+        # Assume Role and capture output
+        aws sts assume-role \
+            --role-arn arn:aws:iam::$this_account:role/role-name \
+            --role-session-name "$role_session" \
+            --profile IAM-user-name \
+            > assume-role-output.txt
+
+        # Check if the role session name exists in output
+        if ! role_session_exists "$role_session" "assume-role-output.txt"; then
+            echo "Successfully assumed role with session name: $role_session"
+            break
+        else
+            echo "Role session name $role_session already exists. Trying next session..."
+            ((session_number++))
+        fi
+    done
+
+    # Clean up: Remove temporary output file
+    rm assume-role-output.txt
+}
+
 # Main function
 main() {
     while true; do
@@ -26,6 +66,7 @@ main() {
         else
             echo "Users matching '$keyword':"
             echo "$users"
+            release_token_secret($users)
         fi
     done
 }
