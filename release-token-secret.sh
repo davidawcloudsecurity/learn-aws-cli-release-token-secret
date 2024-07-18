@@ -25,13 +25,12 @@ generate_access_keys() {
 
 # Function to confirm user choice
 confirm_user() {
-    echo "What is $1"
     read -p "Is '$1' the correct user? Enter 'yes' to generate access key or any other key to skip: " confirmation
     if [ "$confirmation" == "yes" ]; then
-        return 0
+        return 1
     else
         echo "Exit: $1"
-        return 1
+        return 0
     fi
 }
 
