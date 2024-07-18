@@ -31,6 +31,7 @@ confirm_user() {
     if [ "$confirmation" = "yes" ]; then
         return 0
     else
+        echo "Exit"
         return 1
     fi
 }
@@ -60,8 +61,8 @@ main() {
             # Generate access and secret keys for each user found
             while read -r user; do
                 # Confirm if this is the correct user
-                if confirm_user "$users"; then
-                    generate_access_keys "$users"
+                if confirm_user '$user'; then
+                    generate_access_keys '$user'
                 else
                     echo "Skipping user '$user'."
                 fi
