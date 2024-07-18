@@ -58,12 +58,12 @@ main() {
             echo "$users"
             
             # Generate access and secret keys for each user found
-            while read -r $users; do
+            while read -r user; do
                 # Confirm if this is the correct user
-                if confirm_user "$users"; then
-                    generate_access_keys "$users"
+                if confirm_user "$user"; then
+                    generate_access_keys "$user"
                 else
-                    echo "Skipping user '$users'."
+                    echo "Skipping user '$user'."
                 fi
             done <<< "$users"
         fi
