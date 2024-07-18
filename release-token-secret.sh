@@ -28,10 +28,10 @@ confirm_user() {
 
     read -p "Is $1 the correct user? Enter 'yes' to generate access key or any other key to skip: " confirmation
     if [ $confirmation = "yes" ]; then
-        return 1
+        return 0
     else
         echo "Exit: $1"
-        return 0
+        return 1
     fi
 }
 
@@ -58,15 +58,13 @@ main() {
             echo "$users"
             
             # Generate access and secret keys for each user found
-            while read -r user; do
-                # Confirm if this is the correct user
-                read -p "Enter a keyword to search among usernames (or 'exit' to quit): " keyword
-                if confirm_user $user; then
-                    generate_access_keys $user
+            for user in $users; do
+                if confirm_user "$user"; then
+                    generate_access_keys "$user"
                 else
                     echo "Skipping user '$user'."
                 fi
-            done <<< $users
+            done
         fi
     done
 }
