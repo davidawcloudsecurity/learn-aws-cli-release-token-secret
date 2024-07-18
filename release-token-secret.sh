@@ -2,7 +2,8 @@
 
 # Function to list IAM users
 list_iam_users() {
-    aws iam list-users --query 'Users[?contains(UserName, `'$keyword'`)].UserName' --output text
+    local keyword="$1"
+    aws iam list-users --query "Users[?contains(UserName, '$keyword')].UserName" --output text
 }
 
 # Function to generate AWS access key and secret key
@@ -48,7 +49,7 @@ main() {
 
         # Search for the keyword among usernames
         echo "Searching for '$keyword' in IAM user names:"
-        users=$(list_iam_users)
+        users=$(list_iam_users "$keyword")
 
         # Display results
         if [ -z "$users" ]; then
