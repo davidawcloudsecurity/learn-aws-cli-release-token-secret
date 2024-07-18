@@ -23,6 +23,18 @@ generate_access_keys() {
     echo "Generated access and secret keys for user '$user_name' and saved to 'access_keys.txt'"
 }
 
+# Function to confirm user choice
+confirm_user() {
+    local user_name="$1"
+    
+    read -p "Is '$user_name' the correct user? Enter 'yes' to generate access key or any other key to skip: " confirmation
+    if [ "$confirmation" = "yes" ]; then
+        return 0
+    else
+        return 1
+    fi
+}
+
 # Main function
 main() {
     while true; do
@@ -47,7 +59,12 @@ main() {
             
             # Generate access and secret keys for each user found
             while read -r user; do
-                generate_access_keys "$user"
+                # Confirm if this is the correct user
+                if confirm_user "$user"; then
+                    generate_access_keys "$user"
+                else
+                    echo "Skipping user '$user'."
+                fi
             done <<< "$users"
         fi
     done
