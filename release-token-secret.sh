@@ -20,7 +20,7 @@ generate_access_keys() {
     echo "Access Key ID: $access_key_id" > access_keys.txt
     echo "Secret Access Key: $secret_access_key" >> access_keys.txt
 
-    echo "Generated access and secret keys and saved to 'access_keys.txt'"
+    echo "Generated access and secret keys for user '$user_name' and saved to 'access_keys.txt'"
 }
 
 # Main function
@@ -46,9 +46,9 @@ main() {
             echo "$users"
             
             # Generate access and secret keys for each user found
-            for user in $users; do
+            while read -r user; do
                 generate_access_keys "$user"
-            done
+            done <<< "$users"
         fi
     done
 }
