@@ -60,12 +60,14 @@ main() {
             # Generate access and secret keys for each user found
             while read -r user; do
                 # Confirm if this is the correct user
+                read -p "Is $1 the correct user? Enter 'yes' to generate access key or any other key to skip: " confirmation
+
                 if confirm_user $user; then
                     generate_access_keys $user
                 else
                     echo "Skipping user '$user'."
                 fi
-            done <<< "$users"
+            done <<< $users
         fi
     done
 }
