@@ -30,7 +30,6 @@ confirm_user() {
     if [ $confirmation = "yes" ]; then
         return 0
     else
-        echo "Exit: $1"
         return 1
     fi
 }
