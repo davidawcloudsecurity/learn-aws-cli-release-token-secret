@@ -25,7 +25,7 @@ generate_access_keys() {
 
 # Function to confirm user choice
 confirm_user() {
-    read -p "Is '$1' the correct user? Enter 'yes' to generate access key or any other key to skip: " confirmation
+    read -p "Is the correct user? Enter 'yes' to generate access key or any other key to skip: " confirmation
     if [ "$confirmation" == "yes" ]; then
         return 1
     else
@@ -60,7 +60,7 @@ main() {
             while read -r user; do
                 # Confirm if this is the correct user
                 if confirm_user $user; then
-                    generate_access_keys '$user'
+                    generate_access_keys $user
                 else
                     echo "Skipping user '$user'."
                 fi
